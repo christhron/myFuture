@@ -333,7 +333,6 @@
         ? h("div", { class: "notice" },
             h("p", null, "These are sample answers for a made-up student."),
             h("ul", null,
-              h("li", null, "Click the ", h("strong", null, "Edit"), " button beside each group to see its answers."),
               h("li", null, "Click the ", h("strong", null, "Create my AI prompt"), " button at the bottom to create the AI prompt."),
               h("li", null, "Refresh the browser to go back to the start and fill out your own questionnaire.")))
         : h("p", { class: "sec-intro" }, "Fix anything that's wrong, then create your prompt."),
