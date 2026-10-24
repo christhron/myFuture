@@ -1,4 +1,4 @@
-# Course Compass
+# My Future
 
 A free, private questionnaire that helps Nigerian secondary-school leavers choose a course of study and career. Students answer about 80 short questions (results, UTME subjects, strengths, interests, values, budget, family expectations). The site turns the answers into a single, well-structured prompt that they copy into ChatGPT, Claude, Gemini, Meta AI or Copilot to get personal advice.
 
