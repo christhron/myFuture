@@ -274,7 +274,7 @@
           ? [h("button", { class: "btn primary", onclick: () => { state = saved; go(Math.max(0, Math.min(saved.step, SECTIONS.length))); } }, "Continue where I stopped"),
              h("button", { class: "btn ghost", onclick: () => { state = { answers: {}, step: 0 }; clearSaved(); go(0); } }, "Start again")]
           : h("button", { class: "btn primary", onclick: () => { state = { answers: {}, step: 0 }; go(0); } }, "Start the questions"),
-        h("button", { class: "btn link", onclick: () => { state = { answers: JSON.parse(JSON.stringify(CFG.sample)), step: SECTIONS.length, sample: true }; go(SECTIONS.length); } }, "See an example with sample answers")),
+        h("button", { class: "btn link", onclick: () => { state = { answers: JSON.parse(JSON.stringify(CFG.sample)), step: 0, sample: true }; go(0); } }, "See an example with sample answers")),
       h("div", { class: "how" },
         h("h2", null, "How it works"),
         h("ol", null,
@@ -291,6 +291,7 @@
         h("button", { type: "button", class: "btn ghost", onclick: () => go(state.step - 1) }, "Back"),
         h("button", { type: "submit", class: "btn primary" }, state.step === SECTIONS.length - 1 ? "Review answers" : "Next")));
     const out = h("section", null, progress(),
+      state.sample ? h("p", { class: "notice" }, "Example: these answers belong to a made-up student. Changes here aren't saved.") : null,
       h("h2", { class: "sec-title" }, sec.title),
       sec.intro ? h("p", { class: "sec-intro" }, sec.intro) : null,
       form);
@@ -332,7 +333,7 @@
       h("p", { class: "sec-intro" }, "Fix anything that's wrong, then create your prompt."),
       blocks,
       h("div", { class: "nav" },
-        h("button", { class: "btn ghost", onclick: () => go(isSample ? -1 : SECTIONS.length - 1) }, "Back"),
+        h("button", { class: "btn ghost", onclick: () => go(SECTIONS.length - 1) }, "Back"),
         h("button", { class: "btn primary", onclick: () => go(SECTIONS.length + 1) }, "Create my AI prompt")));
   }
 

@@ -260,7 +260,7 @@
       }
     ],
 
-    // Example answers for testing ("Try with sample answers" button). Fictional student.
+    // Example answers for the "See an example with sample answers" button. Fictional student.
     sample: {
       first_name: "Amaka", age: 17, gender: "Female", state_residence: "Enugu", state_origin: "Anambra",
       stage: "Have my results, preparing for UTME", stream: "Science", school_type: "Private",
@@ -285,6 +285,7 @@
       considering: "Computer Science or Electrical/Electronic Engineering", ruled_out: "Medicine. I don't like blood and Biology is my weakest science.",
       role_models: "Iyinoluwa Aboyeji (tech founder); my cousin who is a software developer in Lagos", dream: "Build apps that help small traders in my market.",
       worry: "My parents want Medicine and I don't know how to tell them. Also worried I won't get the cut-off mark.",
+      extra: "I'm the first in my family to go to university. Light is often off at home, so I study at my aunt's shop in the evenings.",
       ai_tool: "ChatGPT", answer_lang: "English", detail: "Detailed", followup: "No, give me recommendations straight away"
     }
   };
