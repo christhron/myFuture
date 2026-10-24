@@ -58,9 +58,9 @@
 
   const AGREE5 = ["Not at all", "A little", "Somewhat", "Quite a lot", "Very much"];
 
-  window.COURSE_COMPASS = {
+  window.MYFUTURE_NIGERIA = {
     version: "0.1",
-    storageKey: "course-compass.v1",
+    storageKey: "myfuture-nigeria.v1",
     lists: { STATES, OLEVEL_SUBJECTS, UTME_SUBJECTS, GRADES },
 
     sections: [

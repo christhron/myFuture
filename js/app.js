@@ -4,8 +4,8 @@
  * browser, and builds the prompt with js/prompt.js. Nothing is sent anywhere.
  */
 (function () {
-  const CFG = window.COURSE_COMPASS;
-  const P = window.CourseCompassPrompt;
+  const CFG = window.MYFUTURE_NIGERIA;
+  const P = window.MyFutureNigeriaPrompt;
   const SECTIONS = CFG.sections;
   const root = document.getElementById("app");
 
@@ -372,7 +372,7 @@
         h("li", null, h("strong", null, "Open"), " your AI app and start a new chat."),
         h("li", null, h("strong", null, "Paste"), " and send. Then keep the conversation going.")),
       h("div", { class: "result-actions" }, copyBtn,
-        window.COURSE_COMPASS_PREVIEW ? null : h("button", { class: "btn ghost", onclick: download }, "Download as .txt")),
+        window.MYFUTURE_NIGERIA_PREVIEW ? null : h("button", { class: "btn ghost", onclick: download }, "Download as .txt")),
       status,
       h("div", { class: "ai-links" }, h("span", { class: "muted" }, "Open:"), links),
       ta,

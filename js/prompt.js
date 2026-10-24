@@ -155,5 +155,5 @@
     ].join("\n\n").trim() + "\n";
   }
 
-  window.CourseCompassPrompt = { buildPrompt, visible, isEmpty, riasecScores };
+  window.MyFutureNigeriaPrompt = { buildPrompt, visible, isEmpty, riasecScores };
 })();
