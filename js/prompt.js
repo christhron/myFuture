@@ -1,5 +1,5 @@
 /*
- * Course Compass — prompt builder
+ * myFuture Nigeria — prompt builder
  * ------------------------------------------------------------
  * Turns the student's answers into one prompt they can paste into any AI.
  * The fixed wording lives in PROMPT_TEXT below; edit it freely.

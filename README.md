@@ -1,4 +1,4 @@
-# My Future
+# myFuture Nigeria
 
 A free, private questionnaire that helps Nigerian secondary-school leavers choose a course of study and career. Students answer about 80 short questions (results, UTME subjects, strengths, interests, values, budget, family expectations). The site turns the answers into a single, well-structured prompt that they copy into ChatGPT, Claude, Gemini, Meta AI or Copilot to get personal advice.
 
@@ -18,10 +18,10 @@ js/app.js         Rendering, navigation, validation, saving, copy/download
 
 ## Publish on GitHub Pages (about 5 minutes)
 
-1. Sign in to GitHub and create a new **public** repository, e.g. `course-compass`.
+1. Sign in to GitHub and create a new **public** repository, e.g. `myFuture`.
 2. On the repository page choose **Add file → Upload files**, drag in everything from this folder (keep the `css` and `js` folders), and click **Commit changes**.
 3. Go to **Settings → Pages**. Under *Build and deployment*, set **Source** to *Deploy from a branch*, choose branch **main** and folder **/ (root)**, then **Save**.
-4. After a minute or two the site is live at `https://YOUR-USERNAME.github.io/course-compass/`.
+4. After a minute or two the site is live at `https://YOUR-USERNAME.github.io/myFuture/`.
 
 Every later commit to `main` republishes the site automatically.
 
@@ -30,10 +30,10 @@ Every later commit to `main` republishes the site automatically.
 ### Using git instead of the web uploader
 
 ```bash
-cd course-compass
-git init && git add . && git commit -m "Course Compass prototype"
+cd myFuture
+git init && git add . && git commit -m "myFuture Nigeria prototype"
 git branch -M main
-git remote add origin https://github.com/YOUR-USERNAME/course-compass.git
+git remote add origin https://github.com/YOUR-USERNAME/myFuture.git
 git push -u origin main
 ```
 

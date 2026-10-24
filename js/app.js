@@ -1,5 +1,5 @@
 /*
- * Course Compass — app logic
+ * myFuture Nigeria — app logic
  * Renders the questionnaire from js/questions.js, saves progress in the
  * browser, and builds the prompt with js/prompt.js. Nothing is sent anywhere.
  */

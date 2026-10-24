@@ -1,5 +1,5 @@
 /*
- * Course Compass — questionnaire definition
+ * myFuture Nigeria — questionnaire definition
  * ------------------------------------------------------------
  * Edit this file to change the questions. No other file needs to change.
  *
