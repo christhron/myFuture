@@ -198,6 +198,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
 
 /* ---------- review ---------- */
 .notice { background: var(--ochre-soft); border-left: 4px solid var(--ochre); padding: 0.75rem 0.9rem; margin-bottom: 1rem; border-radius: 0 var(--radius) var(--radius) 0; }
+.notice p { margin: 0; }
+.notice ul { margin: 0.4rem 0 0; padding-left: 1.25rem; }
 .review-block { border-top: 1px solid var(--line); padding-block: 1rem; display: grid; gap: 0.6rem; }
 .review-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .review-block dl { margin: 0; display: grid; gap: 0.15rem 1rem; }

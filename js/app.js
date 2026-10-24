@@ -46,7 +46,7 @@
       else if (v === true) el.setAttribute(k, "");
       else el.setAttribute(k, v);
     }
-    kids.flat().forEach(c => { if (c != null && c !== false) el.append(c.nodeType ? c : document.createTextNode(c)); });
+    kids.flat(Infinity).forEach(c => { if (c != null && c !== false) el.append(c.nodeType ? c : document.createTextNode(c)); });
     return el;
   }
 
@@ -274,7 +274,7 @@
           ? [h("button", { class: "btn primary", onclick: () => { state = saved; go(Math.max(0, Math.min(saved.step, SECTIONS.length))); } }, "Continue where I stopped"),
              h("button", { class: "btn ghost", onclick: () => { state = { answers: {}, step: 0 }; clearSaved(); go(0); } }, "Start again")]
           : h("button", { class: "btn primary", onclick: () => { state = { answers: {}, step: 0 }; go(0); } }, "Start the questions"),
-        h("button", { class: "btn link", onclick: () => { state = { answers: JSON.parse(JSON.stringify(CFG.sample)), step: 0, sample: true }; go(0); } }, "See an example with sample answers")),
+        h("button", { class: "btn link", onclick: () => { state = { answers: JSON.parse(JSON.stringify(CFG.sample)), step: SECTIONS.length, sample: true }; go(SECTIONS.length); } }, "See an example with sample answers")),
       h("div", { class: "how" },
         h("h2", null, "How it works"),
         h("ol", null,
@@ -291,7 +291,7 @@
         h("button", { type: "button", class: "btn ghost", onclick: () => go(state.step - 1) }, "Back"),
         h("button", { type: "submit", class: "btn primary" }, state.step === SECTIONS.length - 1 ? "Review answers" : "Next")));
     const out = h("section", null, progress(),
-      state.sample ? h("p", { class: "notice" }, "Example: these answers belong to a made-up student. Changes here aren't saved.") : null,
+      state.sample ? h("p", { class: "notice" }, "Example: these answers belong to a made-up student. Changes here aren't saved. Refresh the browser to go back to the start and fill out your own questionnaire.") : null,
       h("h2", { class: "sec-title" }, sec.title),
       sec.intro ? h("p", { class: "sec-intro" }, sec.intro) : null,
       form);
@@ -329,8 +329,14 @@
     const isSample = !!state.sample;
     return h("section", null, progress(),
       h("h2", { class: "sec-title" }, "Check your answers"),
-      isSample ? h("p", { class: "notice" }, "These are sample answers for a made-up student. Go back to the first screen and start the questions to enter your own.") : null,
-      h("p", { class: "sec-intro" }, "Fix anything that's wrong, then create your prompt."),
+      isSample
+        ? h("div", { class: "notice" },
+            h("p", null, "These are sample answers for a made-up student."),
+            h("ul", null,
+              h("li", null, "Click the ", h("strong", null, "Edit"), " button beside each group to see its answers."),
+              h("li", null, "Click the ", h("strong", null, "Create my AI prompt"), " button at the bottom to create the AI prompt."),
+              h("li", null, "Refresh the browser to go back to the start and fill out your own questionnaire.")))
+        : h("p", { class: "sec-intro" }, "Fix anything that's wrong, then create your prompt."),
       blocks,
       h("div", { class: "nav" },
         h("button", { class: "btn ghost", onclick: () => go(SECTIONS.length - 1) }, "Back"),
