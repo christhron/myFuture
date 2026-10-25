@@ -1,7 +1,8 @@
 /*
  * myFuture Nigeria — app logic
  * Renders the questionnaire from js/questions.js, saves progress in the
- * browser, and builds the prompt with js/prompt.js. Nothing is sent anywhere.
+ * browser, and builds the prompt with js/prompt.js. Answers are never sent
+ * anywhere; only the access code (if one is required) is checked online.
  */
 (function () {
   const CFG = window.MYFUTURE_NIGERIA;
@@ -33,6 +34,19 @@
   }
   function clearSaved() {
     try { localStorage.removeItem(CFG.storageKey); } catch (e) { /* ignore */ }
+  }
+
+  // An accepted access code is remembered (separately from answers, so "Clear
+  // my answers" or "Start again" doesn't use the code up a second time).
+  const ACCESS_KEY = CFG.storageKey + ".access";
+  let accessGranted = false; // fallback when storage is unavailable
+  function hasAccess() {
+    if (!CFG.accessCheckUrl || accessGranted) return true;
+    try { return !!localStorage.getItem(ACCESS_KEY); } catch (e) { return false; }
+  }
+  function grantAccess(code) {
+    accessGranted = true;
+    try { localStorage.setItem(ACCESS_KEY, code); } catch (e) { /* ignore */ }
   }
 
   // ---------------- tiny DOM helper ----------------
@@ -269,8 +283,10 @@
         h("li", null, h("strong", null, "About 15 minutes."), " Your answers save as you go, so you can stop and come back."),
         h("li", null, h("strong", null, "Private."), " Your answers stay on this phone or computer. Nothing is sent to us."),
         h("li", null, h("strong", null, "Free."), " You only need a free account with any AI chat app.")),
+      hasAccess() ? null : accessForm(),
       h("div", { class: "actions" },
-        hasSaved
+        !hasAccess() ? null
+        : hasSaved
           ? [h("button", { class: "btn primary", onclick: () => { state = saved; go(Math.max(0, Math.min(saved.step, SECTIONS.length))); } }, "Continue where I stopped"),
              h("button", { class: "btn ghost", onclick: () => { state = { answers: {}, step: 0 }; clearSaved(); go(0); } }, "Start again")]
           : h("button", { class: "btn primary", onclick: () => { state = { answers: {}, step: 0 }; go(0); } }, "Start the questions"),
@@ -281,6 +297,36 @@
           h("li", null, h("strong", null, "Answer"), h("span", null, "8 short sections about your WAEC/NECO grades, UTME subjects, strengths, interests, budget and family.")),
           h("li", null, h("strong", null, "Copy"), h("span", null, "We build one prompt from your answers. Copy it with one tap.")),
           h("li", null, h("strong", null, "Ask AI"), h("span", null, "Paste it into an AI chat. Ask follow-up questions, then check requirements with JAMB and the schools.")))));
+  }
+
+  function accessForm() {
+    const input = h("input", { type: "text", id: "access_code", maxlength: 40, autocomplete: "off", autocapitalize: "characters", spellcheck: "false", "aria-describedby": "access_help" });
+    const err = h("p", { class: "q-error", role: "alert", hidden: true });
+    const btn = h("button", { type: "submit", class: "btn primary" }, "Continue");
+    const fail = msg => { err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Continue"; input.focus(); };
+
+    async function submit(e) {
+      e.preventDefault();
+      const code = input.value.trim();
+      if (!code) return fail("Enter the access code you were given.");
+      err.hidden = true; btn.disabled = true; btn.textContent = "Checking…";
+      try {
+        const res = await fetch(CFG.accessCheckUrl + "?code=" + encodeURIComponent(code));
+        const data = await res.json();
+        if (data.ok) { grantAccess(code); render(); return; }
+        fail(data.result === "used up"
+          ? "This code has already been used the maximum number of times. Ask whoever gave it to you for a new one."
+          : "That code isn't right. Check it and try again.");
+      } catch (e2) {
+        fail("Couldn't check your code. Check your internet connection and try again.");
+      }
+    }
+
+    return h("form", { class: "q", novalidate: true, onsubmit: submit },
+      h("label", { class: "q-label", for: "access_code" }, "Access code"),
+      h("p", { class: "q-help", id: "access_help" }, "Enter the code you were given by your school or whoever shared this site. Only the code is checked online."),
+      input, err,
+      h("div", { class: "actions" }, btn));
   }
 
   function renderSection() {

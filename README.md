@@ -2,8 +2,8 @@
 
 A free, private questionnaire that helps Nigerian secondary-school leavers choose a course of study and career. Students answer about 80 short questions (results, UTME subjects, strengths, interests, values, budget, family expectations). The site turns the answers into a single, well-structured prompt that they copy into ChatGPT, Claude, Gemini, Meta AI or Copilot to get personal advice.
 
-- **No server, no database, no API keys.** Everything runs in the student's browser.
-- **Private.** Answers are saved only in the student's own browser (localStorage) so they can stop and resume. Nothing is sent anywhere.
+- **No server of its own, no API keys.** Everything runs in the student's browser. The only optional online piece is an access-code check run from a Google Sheet (see *Access codes* below).
+- **Private.** Answers are saved only in the student's own browser (localStorage) so they can stop and resume. Answers are never sent anywhere; if access codes are switched on, only the code is checked.
 - **Phone-first and light.** Plain HTML, CSS and JavaScript; no frameworks or build step. About 65 KB plus two web fonts.
 
 ## Files
@@ -14,6 +14,7 @@ css/style.css     All styling (light and dark themes)
 js/questions.js   THE QUESTIONS: edit this to add, remove or reword questions
 js/prompt.js      THE PROMPT: edit PROMPT_TEXT at the top to change what the AI is told
 js/app.js         Rendering, navigation, validation, saving, copy/download
+apps-script/access-codes.gs   Access-code checker that runs in a Google Sheet (optional)
 ```
 
 ## Publish on GitHub Pages (about 5 minutes)
@@ -36,6 +37,26 @@ git branch -M main
 git remote add origin https://github.com/YOUR-USERNAME/myFuture.git
 git push -u origin main
 ```
+
+## Access codes (optional)
+
+You can require students to enter an access code before they start. Each code has a maximum number of uses, and every attempt is logged with the time. Codes live in a Google Sheet you control. A code is used once it's accepted. After that the student's browser remembers it, so stopping and coming back on the same phone doesn't use it again. A different phone or browser counts as a new use. The **See an example** button works without a code.
+
+**Set up (about 10 minutes):**
+
+1. Create a new Google Sheet. Rename the first tab **Codes** and type these headers in row 1: `code`, `max_uses`, `uses`, `note`. Add one row per code, e.g. `STMARYS-7Q4K`, `120`, `0`, `St Mary's pilot`.
+2. Add a second tab named **Log** with headers `timestamp`, `code`, `result` in row 1.
+3. Choose **Extensions → Apps Script**. Delete what's in the editor, paste in all of `apps-script/access-codes.gs`, and click **Save**.
+4. Click **Deploy → New deployment**. Click the gear next to *Select type* and choose **Web app**. Set *Execute as* to **Me** and *Who has access* to **Anyone**, then **Deploy**. Google asks you to authorise the script: choose your account, then *Advanced → Go to (project name)* → **Allow**.
+5. Copy the **Web app URL** (it ends in `/exec`). In `js/questions.js`, paste it into `accessCheckUrl: "",` near the top, between the quotes, and publish the site.
+
+**Managing codes:** add, change or remove rows in **Codes** at any time; changes take effect immediately. To allow more uses, raise `max_uses`. To switch a code off, set `max_uses` to `0`. Codes are matched ignoring capitals and spaces. Each check adds a row to **Log** with the result `accepted`, `used up` or `unknown`.
+
+**Good to know:**
+- Use codes that are hard to guess (mix letters and numbers, e.g. `STMARYS-7Q4K`), because anyone with the site can try codes.
+- If you edit the script later, publish the change with **Deploy → Manage deployments → Edit (pencil) → Version: New version → Deploy**. This keeps the same URL. A *New deployment* gives a new URL that you would have to paste into `questions.js` again.
+- The code controls who can start the questionnaire. Someone technically skilled could still get round it by editing the page in their browser, but normal use is counted accurately.
+- To turn codes off, set `accessCheckUrl` back to `""`.
 
 ## Test locally
 

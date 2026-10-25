@@ -61,6 +61,8 @@
   window.MYFUTURE_NIGERIA = {
     version: "0.1",
     storageKey: "myfuture-nigeria.v1",
+    // Web-app URL of the access-code checker (apps-script/access-codes.gs). Leave "" for no access code.
+    accessCheckUrl: "",
     lists: { STATES, OLEVEL_SUBJECTS, UTME_SUBJECTS, GRADES },
 
     sections: [
