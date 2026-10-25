@@ -4,6 +4,7 @@ A free, private questionnaire that helps Nigerian secondary-school leavers choos
 
 - **No server, no database, no API keys.** Everything runs in the student's browser.
 - **Private.** Answers are saved only in the student's own browser (localStorage) so they can stop and resume. Nothing is sent anywhere.
+- **Access code.** Students enter an access code before they can start (see *Access code* below).
 - **Phone-first and light.** Plain HTML, CSS and JavaScript; no frameworks or build step. About 65 KB plus two web fonts.
 
 ## Files
@@ -13,7 +14,8 @@ index.html        Page shell
 css/style.css     All styling (light and dark themes)
 js/questions.js   THE QUESTIONS: edit this to add, remove or reword questions
 js/prompt.js      THE PROMPT: edit PROMPT_TEXT at the top to change what the AI is told
-js/app.js         Rendering, navigation, validation, saving, copy/download
+js/app.js         Rendering, navigation, validation, saving, copy/download, access-code check
+tools/make-access-hash.js   Makes the hash for a new access code (not used by the site)
 ```
 
 ## Publish on GitHub Pages (about 5 minutes)
@@ -37,6 +39,24 @@ git remote add origin https://github.com/YOUR-USERNAME/myFuture.git
 git push -u origin main
 ```
 
+## Access code
+
+Students must enter an access code on the first screen before they can start the questions or see the example. Capitals and spaces don't matter. The code is checked in the browser, so nothing is sent anywhere. Once the code is accepted, the browser remembers it, so a student who stops and comes back on the same phone isn't asked again. *Clear my answers* doesn't forget the code.
+
+The code itself is **not** in the site's files or in this repository. `js/questions.js` holds only a salted, deliberately slow hash of it (`access`), so someone reading the source can't read the code off it. They would have to guess, and each guess takes a fraction of a second. The repository is public, so keep the code out of commit messages, issues and this README.
+
+**Change the code** (needs [Node.js](https://nodejs.org/)):
+
+```bash
+node tools/make-access-hash.js NEW-CODE
+```
+
+Paste the three printed lines over the ones inside `access: { ... }` in `js/questions.js`, then publish. Devices that used the old code ask for the new one on their next visit. Their saved answers are kept.
+
+**Turn the code off:** set `access: null` in `js/questions.js`.
+
+**Limits:** the site has no server, so the check runs in the student's browser. A technically skilled student could get past it with the browser's developer tools, or by running their own copy of the public code. The code stops casual use and passing the link around. It is not real security. Choose a code that is hard to guess (avoid words or references people could work out), because guesses can be tested against the hash offline.
+
 ## Test locally
 
 Open `index.html` directly in a browser, or run a tiny server (recommended, so copy-to-clipboard behaves like the live site):
@@ -46,7 +66,7 @@ python3 -m http.server 8000
 # then visit http://localhost:8000
 ```
 
-On the first screen, **See an example with sample answers** fills in a fictional student and jumps to the review, so you can check the generated prompt without typing everything. Sample answers never overwrite a real student's saved progress.
+After you enter the access code, **See an example with sample answers** fills in a fictional student and jumps to the review, so you can check the generated prompt without typing everything. Sample answers never overwrite a real student's saved progress.
 
 ## Customising
 

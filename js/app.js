@@ -35,6 +35,34 @@
     try { localStorage.removeItem(CFG.storageKey); } catch (e) { /* ignore */ }
   }
 
+  // ---------------- access code ----------------
+  // The code is checked in the browser against a salted hash (CFG.access), so
+  // it never appears in the source. An accepted code is remembered separately
+  // from answers and re-checked on each visit, so changing the code locks out
+  // devices that used the old one.
+  const ACCESS_KEY = CFG.storageKey + ".access";
+  let accessGranted = !CFG.access;
+
+  const normaliseCode = s => String(s).toLowerCase().replace(/\s+/g, "");
+  async function codeMatches(code) {
+    const { salt, iterations, hash } = CFG.access;
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey("raw", enc.encode(normaliseCode(code)), "PBKDF2", false, ["deriveBits"]);
+    const bits = await crypto.subtle.deriveBits(
+      { name: "PBKDF2", hash: "SHA-256", salt: new Uint8Array(salt.match(/../g).map(b => parseInt(b, 16))), iterations }, key, 256);
+    return Array.from(new Uint8Array(bits), b => b.toString(16).padStart(2, "0")).join("") === hash;
+  }
+  function rememberedCode() {
+    try { return localStorage.getItem(ACCESS_KEY); } catch (e) { return null; }
+  }
+  function grantAccess(code) {
+    accessGranted = true;
+    try { localStorage.setItem(ACCESS_KEY, normaliseCode(code)); } catch (e) { /* ignore */ }
+  }
+  function forgetAccess() {
+    try { localStorage.removeItem(ACCESS_KEY); } catch (e) { /* ignore */ }
+  }
+
   // ---------------- tiny DOM helper ----------------
   function h(tag, attrs, ...kids) {
     const el = document.createElement(tag);
@@ -269,7 +297,8 @@
         h("li", null, h("strong", null, "About 15 minutes."), " Your answers save as you go, so you can stop and come back."),
         h("li", null, h("strong", null, "Private."), " Your answers stay on this phone or computer. Nothing is sent to us."),
         h("li", null, h("strong", null, "Free."), " You only need a free account with any AI chat app.")),
-      h("div", { class: "actions" },
+      accessGranted ? null : accessForm(),
+      !accessGranted ? null : h("div", { class: "actions" },
         hasSaved
           ? [h("button", { class: "btn primary", onclick: () => { state = saved; go(Math.max(0, Math.min(saved.step, SECTIONS.length))); } }, "Continue where I stopped"),
              h("button", { class: "btn ghost", onclick: () => { state = { answers: {}, step: 0 }; clearSaved(); go(0); } }, "Start again")]
@@ -281,6 +310,32 @@
           h("li", null, h("strong", null, "Answer"), h("span", null, "8 short sections about your WAEC/NECO grades, UTME subjects, strengths, interests, budget and family.")),
           h("li", null, h("strong", null, "Copy"), h("span", null, "We build one prompt from your answers. Copy it with one tap.")),
           h("li", null, h("strong", null, "Ask AI"), h("span", null, "Paste it into an AI chat. Ask follow-up questions, then check requirements with JAMB and the schools.")))));
+  }
+
+  function accessForm() {
+    const input = h("input", { type: "text", id: "access_code", maxlength: 40, autocomplete: "off", autocapitalize: "off", spellcheck: "false", "aria-describedby": "access_help" });
+    const err = h("p", { class: "q-error", role: "alert", hidden: true });
+    const btn = h("button", { type: "submit", class: "btn primary" }, "Continue");
+    const fail = msg => { err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Continue"; input.focus(); };
+
+    async function submit(e) {
+      e.preventDefault();
+      const code = input.value;
+      if (!normaliseCode(code)) return fail("Enter the access code you were given.");
+      err.hidden = true; btn.disabled = true; btn.textContent = "Checking…";
+      let ok;
+      try { ok = await codeMatches(code); } catch (e2) {
+        return fail("This browser can't check the code. Update it, or try Chrome, then try again.");
+      }
+      if (!ok) return fail("That code isn't right. Check it and try again.");
+      grantAccess(code); render();
+    }
+
+    return h("form", { class: "q", novalidate: true, onsubmit: submit },
+      h("label", { class: "q-label", for: "access_code" }, "Access code"),
+      h("p", { class: "q-help", id: "access_help" }, "Enter the code you were given by your school or whoever shared this site."),
+      input, err,
+      h("div", { class: "actions" }, btn));
   }
 
   function renderSection() {
@@ -401,13 +456,22 @@
     root.innerHTML = "";
     const n = SECTIONS.length;
     let view;
-    if (state.step < 0) view = renderWelcome();
+    if (state.step < 0 || !accessGranted) view = renderWelcome();
     else if (state.step < n) view = renderSection();
     else if (state.step === n) view = renderReview();
     else view = renderResult();
     root.append(view);
   }
 
-  // Start on the welcome screen; it offers to resume saved progress.
-  render();
+  // Start on the welcome screen; it offers to resume saved progress. A code
+  // remembered from an earlier visit is re-checked first.
+  const remembered = !accessGranted && rememberedCode();
+  if (!remembered) render();
+  else {
+    root.append(h("p", { class: "muted" }, "Loading…"));
+    codeMatches(remembered).catch(() => false).then(ok => {
+      if (ok) accessGranted = true; else forgetAccess();
+      render();
+    });
+  }
 })();

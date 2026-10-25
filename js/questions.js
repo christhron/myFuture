@@ -61,6 +61,13 @@
   window.MYFUTURE_NIGERIA = {
     version: "0.1",
     storageKey: "myfuture-nigeria.v1",
+    // Access code: only a salted PBKDF2-SHA256 hash is kept here, never the code
+    // itself. See "Access code" in README.md to change it. Set to null for no code.
+    access: {
+      salt: "d83b378cfe1378aa7781907f61313c1b",
+      iterations: 250000,
+      hash: "353358fe71c30814018227e80a68c8b2f0d910d8fb957d7813543df540eb6044"
+    },
     lists: { STATES, OLEVEL_SUBJECTS, UTME_SUBJECTS, GRADES },
 
     sections: [
